@@ -1,3 +1,10 @@
+if exists('s:loaded')
+  finish
+endif
+let s:loaded = 1
+
+let s:path = expand('<sfile>:p:h')
+
 " plug {{{1
 call plug#begin('~/.vim/plugged')
 
@@ -42,6 +49,14 @@ let g:asyncrun_open = 6
 nnoremap <F10> :call asyncrun#quickfix_toggle(6)<cr>
 
 " others {{{1
+call xcc#plug#load()
+PI edit
+PI snip
+PI quickmenu
+
+let g:quickmenu_cmds = {
+      \ 'help.md': { 'command': 'e ' . s:path . '/help.md' }
+      \ }
 
 nnoremap - :<C-u>ls<CR>:buffer<Space>
 
