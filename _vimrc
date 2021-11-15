@@ -561,6 +561,7 @@ nnoremap <Leader>9 9<C-w>w
 nnoremap <Leader>0 10<C-w>w
 
 " buffer
+nnoremap <silent> <Leader>ba :<C-u>call xcc#tags#alt_file()<CR>
 nnoremap <silent> <Leader>bd :<C-u>bd<CR>
 nnoremap <silent> <Leader>bc :<C-u>call V_buffer_close()<CR>
 nnoremap <silent> <Leader>bo :<C-u>call V_buffer_only()<CR>
