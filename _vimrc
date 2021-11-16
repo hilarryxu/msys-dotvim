@@ -428,6 +428,15 @@ function! V_choose_colorscheme() abort
   call V_fuzzy(s:colors, 's:set_colorscheme', 'Choose colorscheme')
 endfunction
 
+function! s:switch_to_buffer(results) abort
+  execute 'buffer' matchstr(a:results[0], '^\s*\zs\d\+')
+endfunction
+
+function! V_choose_buffer(props) abort
+  let buffers = map(split(execute('ls' .. (get(a:props, 'unlisted', 0) ? '!' : '')), "\n"), 'substitute(v:val, ''"\(.*\)"\s*line\s*\d\+$'', ''\1'', "")')
+  call V_fuzzy(buffers, 's:switch_to_buffer', 'Switch buffer')
+endfunction
+
 function! V_tab_width(...) abort
   if a:0 > 0
     let twd = a:1 > 0 ? a:1 : 1
@@ -536,7 +545,9 @@ endfunction
 " find/filter
 nnoremap <silent> <C-p> :<C-u>FindFile<CR>
 nnoremap <silent> <Leader>ff :<C-u>FindFile<CR>
-nnoremap <Leader>fb :<C-u>ls<CR>:buffer<Space>
+" nnoremap <Leader>fb :<C-u>ls<CR>:buffer<Space>
+nnoremap <silent> - :<C-u>call V_choose_buffer({})<CR>
+nnoremap <silent> <Leader>fb :<C-u>call V_choose_buffer({})<CR>
 nnoremap <silent> <Leader>fr :<C-u>call V_arglist_fuzzy(v:oldfiles)<CR>
 nnoremap <silent> <Leader>fl :<C-u>call <SID>find_in_loclist(0)<CR>
 nnoremap <silent> <Leader>fq :<C-u>call <SID>find_in_qflist()<CR>

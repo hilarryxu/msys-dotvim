@@ -74,8 +74,7 @@ let g:quickmenu_cmds = {
       \ 'help.md': { 'command': 'e ' . s:path . '/help.md' }
       \ }
 
-
-nnoremap - :<C-u>ls<CR>:buffer<Space>
+" nnoremap - :<C-u>ls<CR>:buffer<Space>
 
 set t_Co=256
 colorscheme xoria256mod
