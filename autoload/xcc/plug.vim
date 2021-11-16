@@ -1,10 +1,12 @@
-if exists('s:loaded')
+if exists('s:loaded') && !exists('g:DEBUG')
   finish
 endif
 let s:loaded = 1
 
 let s:path = expand('<sfile>:p:h')
 
+" Command:
+" :PI xxx yyy zzz
 function! xcc#plug#load(...) abort "{{{
   if a:0 == 0 || empty(a:1)
     return
@@ -22,7 +24,7 @@ function! xcc#plug#load(...) abort "{{{
     try
       call xcc#plug#{name}#plugin#load()
     catch
-      echoerr '[plug] Fail to load plug: ' . name
+      echoerr '[plug] fail to load plug: ' . name
       continue
     endtry
   endfor
@@ -35,3 +37,4 @@ function! xcc#plug#complete(ArgLead, CmdLine, CursorPos) abort "{{{
 endfunction "}}}
 
 command! -nargs=* -complete=customlist,xcc#plug#complete PI call xcc#plug#load(<f-args>)
+command! -nargs=1 SOURCE execute 'source ' . expand('<sfile>:p:h') . '/' . <q-args>
