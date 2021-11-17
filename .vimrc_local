@@ -8,6 +8,8 @@ let s:path = expand('<sfile>:p:h')
 " plug {{{1
 call plug#begin('~/.vim/plugged')
 
+Plug 'hilarryxu/xcc.vim'
+
 " Plug 'junegunn/vim-easy-align'
 
 Plug 'skywind3000/asyncrun.vim'
