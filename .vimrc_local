@@ -15,14 +15,8 @@ Plug 'hilarryxu/xcc.vim'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'skywind3000/vim-auto-popmenu'
 
-" if has('nvim') || has('patch-8.0.902')
-"   Plug 'mhinz/vim-signify'
-" else
-"   Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
-" endif
 Plug 'ludovicchabant/vim-gutentags'
 " Plug 'octol/vim-cpp-enhanced-highlight'
-" Plug 'tpope/vim-unimpaired'
 
 call plug#end()
 
@@ -75,8 +69,6 @@ PI quickmenu
 let g:quickmenu_cmds = {
       \ 'help.md': { 'command': 'e ' . s:path . '/help.md' }
       \ }
-
-" nnoremap - :<C-u>ls<CR>:buffer<Space>
 
 set t_Co=256
 colorscheme xoria256mod
