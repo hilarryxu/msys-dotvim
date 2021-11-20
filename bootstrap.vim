@@ -14,22 +14,14 @@ function! s:detect_env()
 
   let env.nvim = has('nvim') && exists('*jobwait') && !env.is_win
   let env.vim8 = exists('*job_start')
-  let env.timer = exists('*timer_start')
-  let env.tmux = !empty($TMUX)
   let env.gui = has('gui_running')
-  let env.has_python = has('python') || has('python3')
 
   let user_dir = (env.is_win && !env.is_cygwin)
         \ ? expand('$VIM/vimfiles')
         \ : expand('~/.vim')
   let env.path = {
         \   'user':        user_dir,
-        \   'plugins':     user_dir . '/plugins',
-        \   'data':        user_dir . '/data',
-        \   'local_vimrc': user_dir . '/.vimrc_local',
-        \   'tmp':         user_dir . '/tmp',
-        \   'undo':        user_dir . '/data/undo',
-        \   'plug_path':   user_dir . '/plugged',
+        \   'local_vimrc': user_dir . '/.vimrc_local'
         \ }
 
   return env
