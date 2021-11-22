@@ -1,7 +1,7 @@
 " .vimrc
 "
 " Author:   Larry Xu <hilarryxu@gmail.com>
-" Updated:  2021/11/15
+" Updated:  2021/11/22
 "
 " This file changes a lot.
 
@@ -63,7 +63,6 @@ if has('gui_running')
   set guioptions-=r
   set guioptions-=b
   set mouse=a
-  set lines=40 columns=124
 endif
 
 " Section: sensible {{{1
@@ -157,6 +156,7 @@ let mapleader = ','
 let maplocalleader = "\\"
 set modeline
 
+set hidden
 set nonumber
 set backspace=indent,eol,start
 set history=1000
@@ -174,9 +174,9 @@ let do_syntax_sel_menu=1
 " set cmdheight=2
 
 " tab, indent
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
 set expandtab
 set smarttab
 set autoindent
@@ -249,44 +249,6 @@ function! s:warn(error) abort
   echohl None
 endfunction
 
-function! s:capture(excmd) abort
-  if exists('*execute')
-    return execute(a:excmd)
-  else
-    try
-      redir => cout
-      execute 'silent! ' . a:excmd
-    finally
-      redir END
-    endtry
-    return cout
-  endif
-endfunction
-
-if exists('*systemlist')
-  function! s:systemlist(cmd, ...) abort
-    if type(a:cmd) == 3
-      let cmd = map(a:cmd, 'shellescape(v:val)')
-      let excmd = join(cmd, ' ')
-      return a:0 == 0 ? systemlist(excmd) : systemlist(excmd, a:1)
-    else
-      return a:0 == 0 ? systemlist(a:cmd) : systemlist(a:cmd, a:1)
-    endif
-  endfunction
-else
-  function! s:systemlist(cmd, ...) abort
-    if type(a:cmd) == 3
-      let cmd = map(a:cmd, 'shellescape(v:val)')
-      let excmd = join(cmd, ' ')
-      return a:0 == 0 ? split(system(excmd), "\n")
-            \ : split(system(excmd, a:1), "\n")
-    else
-      return a:0 == 0 ? split(system(a:cmd), "\n")
-            \ : split(system(a:cmd, a:1), "\n")
-    endif
-  endfunction
-endif
-
 fun! s:get_ff_output(inpath, outpath, callback, channel, status)
   let l:output = filereadable(a:outpath) ? readfile(a:outpath) : []
   silent! call delete(a:outpath)
@@ -294,7 +256,7 @@ fun! s:get_ff_output(inpath, outpath, callback, channel, status)
   call function(a:callback)(l:output)
 endf
 
-for s:ff_bin in ['fzy', 'sk', 'fzf', 'selecta', 'pick', ''] " Sort according to your preference
+for s:ff_bin in ['fzy', 'sk', 'fzf', '']
   if executable(s:ff_bin)
     break
   endif
@@ -322,7 +284,7 @@ endfunction
 function! V_vim_cmd(cmd) abort
   botright 10new
   setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nowrap
-  call append(0, split(s:capture(a:cmd), "\n"))
+  call append(0, split(execute(a:cmd), "\n"))
   normal! gg
 endfunction
 
@@ -340,7 +302,7 @@ function! V_cmd(cmd, ...) abort
 endfunction
 
 function! V_fuzzy(input, callback, prompt) abort
-  if s:env.win_gvim
+  if 0 && s:env.win_gvim
     if type(a:input) ==# v:t_string
       call zeef#open(systemlist(a:input), a:callback, a:prompt)
     else  " Assume List
@@ -353,56 +315,57 @@ function! V_fuzzy(input, callback, prompt) abort
     return
   endif
 
-  let l:ff_cmds = {
+  let ff_cmds = {
         \ 'fzf':     "|fzf -m --height 15 --prompt '".a:prompt."> ' 2>/dev/tty",
         \ 'fzy':     "|fzy --lines=15 --prompt='".a:prompt."> ' 2>/dev/tty",
-        \ 'pick':    '|pick -X',
-        \ 'selecta': '|selecta 2>/dev/tty',
         \ 'sk':      "|sk -m --height 15 --prompt '".a:prompt."> '"
         \ }
   if s:env.is_win || s:env.is_cygwin
-    let l:ff_cmds = {
+    let ff_cmds = {
           \ 'fzf': '|fzf -m ',
-          \ 'fzy':  "|fzy --lines=15 --prompt='".a:prompt."> ' 2>/dev/tty",
+          \ 'fzy': "|fzy --lines=15 ",
           \ }
   endif
 
-  let l:ff_cmd = l:ff_cmds[s:ff_bin]
+  let ff_cmd = ff_cmds[s:ff_bin]
 
   if type(a:input) ==# 1  " v:t_string
-    let l:inpath = ''
-    let l:cmd = a:input . l:ff_cmd
+    let inpath = ''
+    let cmd = a:input . ff_cmd
   else  " Assume List
-    let l:inpath = tempname()
-    call writefile(a:input, l:inpath)
-    let l:cmd  = 'cat '.fnameescape(l:inpath) . l:ff_cmd
+    let inpath = tempname()
+    call writefile(a:input, inpath)
+    let cat_cmd = (s:env.is_win && !s:env.is_cygwin)
+          \ ? 'type'
+          \ : 'cat'
+    let cmd  = cat_cmd . ' ' . fnameescape(inpath) . ff_cmd
   endif
 
   if !has('gui_running') && !s:env.is_cygwin && executable('tput') && filereadable('/dev/tty')
-    let l:output = s:systemlist(printf('tput cup %d >/dev/tty; tput cnorm >/dev/tty; ' . l:cmd, &lines))
+    let output = systemlist(printf('tput cup %d >/dev/tty; tput cnorm >/dev/tty; ' . cmd, &lines))
     redraw!
-    silent! call delete(l:inpath)
-    call function(a:callback)(l:output)
+    silent! call delete(inpath)
+    call function(a:callback)(output)
     return
   endif
 
-  let l:outpath = tempname()
-  let l:cmd .= ' >' . fnameescape(l:outpath)
+  let outpath = tempname()
+  let cmd .= ' >' . fnameescape(outpath)
 
   if has('terminal')
     if !s:env.is_win && !s:env.is_cygwin
       botright 15split
     endif
-    call term_start([&shell, &shellcmdflag, l:cmd], {
+    call term_start([&shell, &shellcmdflag, cmd], {
           \ 'term_name': a:prompt,
           \ 'curwin': 1,
           \ 'term_finish': 'close',
-          \ 'exit_cb': function('s:get_ff_output', [l:inpath, l:outpath, a:callback])
+          \ 'exit_cb': function('s:get_ff_output', [inpath, outpath, a:callback])
           \ })
   else
-   silent execute '!' . l:cmd
+   silent execute '!' . cmd
    redraw!
-   call s:get_ff_output(l:inpath, l:outpath, a:callback, -1, v:shell_error)
+   call s:get_ff_output(inpath, outpath, a:callback, -1, v:shell_error)
   endif
 endfunction
 
