@@ -10,6 +10,7 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'hilarryxu/xcc.vim'
 
+Plug 'tpope/vim-commentary'
 " Plug 'junegunn/vim-easy-align'
 
 Plug 'skywind3000/asyncrun.vim'
@@ -93,3 +94,7 @@ set hidden
 
 set t_Co=256
 colorscheme xoria256mod
+
+if g:vimrc_env.win_gvim
+  set guifont=Consolas_for_Powerline_FixedD:h11:cANSI
+endif

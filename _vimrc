@@ -25,11 +25,15 @@ function! VimrcEnvironment()
   let env.timer = exists('*timer_start')
   let env.tmux = !empty($TMUX)
   let env.gui = has('gui_running')
+  let env.win_gvim = env.is_win && has('gui_running')
   let env.has_python = has('python') || has('python3')
 
   let user_dir = (env.is_win && !env.is_cygwin)
         \ ? expand('$VIM/vimfiles')
         \ : expand('~/.vim')
+  if env.win_gvim
+    let user_dir = expand('~/.vim')
+  endif
   let env.path = {
         \   'user':        user_dir,
         \   'plugins':     user_dir . '/plugins',
@@ -47,13 +51,19 @@ let s:env = VimrcEnvironment()
 let $VIMHOME = s:env.path.user
 let g:vimrc_env = s:env
 
-if s:env.nvim
-  set runtimepath+=$HOME/.vim
+if s:env.nvim || s:env.win_gvim
+  set runtimepath^=$HOME/.vim
+  set runtimepath+=$HOME/.vim/after
 endif
 
-if has('gui_running') && s:env.is_win
+if has('gui_running')
   let $LANG = 'en'
   set langmenu=en
+  set guioptions-=T
+  set guioptions-=r
+  set guioptions-=b
+  set mouse=a
+  set lines=40 columns=124
 endif
 
 " Section: sensible {{{1
