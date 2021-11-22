@@ -59,7 +59,7 @@ endif
 " acp {{{1
 if s:has_plug('vim-auto-popmenu')
   " enable this plugin for filetypes, '*' for all files.
-  let g:apc_enable_ft = {'text':1, 'c':1, 'cpp':1}
+  let g:apc_enable_ft = {'text': 1, 'c': 1, 'cpp': 1, 'vim': 1}
 
   " source for dictionary, current or other loaded buffers, see ':help cpt'
   set cpt=.,k,w,b,u,t
@@ -96,5 +96,6 @@ set t_Co=256
 colorscheme xoria256mod
 
 if g:vimrc_env.win_gvim
-  set guifont=Consolas_for_Powerline_FixedD:h11:cANSI
+  set guifont=Consolas_for_Powerline_FixedD:h14:cANSI
+  set lines=35 columns=110
 endif

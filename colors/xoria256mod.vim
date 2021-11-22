@@ -107,19 +107,23 @@ hi Structure          ctermfg=146 guifg=#afafd7
 hi Tag                ctermfg=174 guifg=#d78787
 hi Type               ctermfg=146 guifg=#afafdf                           cterm=none      gui=none
 hi Typedef            ctermfg=146 guifg=#afafd7
+
 "" Special Syntax {{{2
+
 """ .diff {{{3
 hi diffFile           ctermfg=244 guifg=#808080
 hi diffLine           ctermfg=244 guifg=#808080
 hi diffAdded          ctermfg=150 guifg=#afdf87
 hi diffRemoved        ctermfg=174 guifg=#df8787
 hi diffChanged        ctermfg=179 guifg=#d7af5f
+
 """ vimdiff {{{3
 hi diffAdd            ctermfg=bg  guifg=bg      ctermbg=151 guibg=#afdfaf
 hi diffDelete         ctermfg=bg  guifg=bg      ctermbg=246 guibg=#949494 cterm=none      gui=none
 hi diffChange         ctermfg=bg  guifg=bg      ctermbg=181 guibg=#dfafaf
 hi diffOldLine        ctermfg=104 guifg=#8787d7
 hi diffText           ctermfg=bg  guifg=bg      ctermbg=174 guibg=#df8787 cterm=none      gui=none
+
 """ HTML {{{3
 hi htmlTag            ctermfg=244
 hi htmlEndTag         ctermfg=244
@@ -128,18 +132,23 @@ hi htmlValue          ctermfg=187 guifg=#dfdfaf
 hi htmlTitle          ctermfg=254               ctermbg=95
 hi htmlTagName        ctermfg=146
 hi htmlString         ctermfg=187
+
 """ django {{{3
 hi djangoVarBlock     ctermfg=180 guifg=#dfaf87
 hi djangoTagBlock     ctermfg=150 guifg=#afdf87
 hi djangoStatement    ctermfg=146 guifg=#afafdf
 hi djangoFilter       ctermfg=174 guifg=#df8787
+
 """ python {{{3
 hi pythonExceptions   ctermfg=174
+
 """ MardDown {{{3
 hi mkdCode            ctermfg=244 guifg=#808080
 hi mkdURL             ctermfg=111 guifg=#87AFFF
 hi mkdLink            ctermfg=181 guifg=#D7AFAF
+
 """ Plugins {{{2
+
 """ NERDTree {{{3
 hi Directory          ctermfg=110 guifg=#87afdf
 hi treeCWD            ctermfg=180 guifg=#dfaf87
@@ -148,14 +157,20 @@ hi treeOpenable       ctermfg=150 guifg=#afdf87
 hi treePart           ctermfg=244 guifg=#808080
 hi treeDirSlash       ctermfg=244 guifg=#808080
 hi treeLink           ctermfg=182 guifg=#dfafdf
+
 """ vim-hlextraws {{{3
 hi ExtraWS                                      ctermbg=1   guibg=#800000
+
 """ Neomake {{{3
 hi NeomakeErrorSign   ctermfg=174 guifg=#d78787 ctermbg=233 guibg=#121212 cterm=bold      gui=bold
 hi NeomakeWarningSign ctermfg=179 guifg=#d7af5f ctermbg=233 guibg=#121212 cterm=bold      gui=bold
 hi NeomakeMessageSign ctermfg=110 guifg=#87afd7 ctermbg=233 guibg=#121212 cterm=bold      gui=bold
 hi NeomakeInfoSign    ctermfg=15  guifg=#ffffff ctermbg=233 guibg=#121212 cterm=bold      gui=bold
+
 """ fzf {{{3
 hi fzf1               ctermfg=174 guifg=#df8787 ctermbg=233 guibg=#121212
 hi fzf2               ctermfg=150 guifg=#afd787 ctermbg=233 guibg=#121212
 hi fzf3               ctermfg=251 guifg=#c6c6c6 ctermbg=233 guibg=#121212
+
+""" zeef {{{3
+hi ZeefMatch          ctermfg=174 guifg=#df8787 ctermbg=233 guibg=#121212

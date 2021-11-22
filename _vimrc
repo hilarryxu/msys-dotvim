@@ -340,6 +340,15 @@ function! V_cmd(cmd, ...) abort
 endfunction
 
 function! V_fuzzy(input, callback, prompt) abort
+  if s:env.win_gvim
+    if type(a:input) ==# v:t_string
+      call zeef#open(systemlist(a:input), a:callback, a:prompt)
+    else  " Assume List
+      call zeef#open(a:input, a:callback, a:prompt)
+    endif
+    return
+  endif
+
   if empty(s:ff_bin)
     return
   endif
@@ -397,14 +406,14 @@ function! V_fuzzy(input, callback, prompt) abort
   endif
 endfunction
 
-function! s:set_arglist(paths) abort
+function! V_set_arglist(paths) abort
   if empty(a:paths) | return | endif
   " execute 'args' join(map(a:paths, 'fnameescape(v:val)'))
   execute 'edit' fnameescape(a:paths[0])
 endfunction
 
 function! V_arglist_fuzzy(input_cmd) abort
-  call V_fuzzy(a:input_cmd, 's:set_arglist', 'Choose files')
+  call V_fuzzy(a:input_cmd, 'V_set_arglist', 'Choose files')
 endfunction
 
 function! V_findfile(...) abort
