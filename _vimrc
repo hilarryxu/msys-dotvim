@@ -1,7 +1,7 @@
 " .vimrc
 "
 " Author:   Larry Xu <hilarryxu@gmail.com>
-" Updated:  2021/11/22
+" Updated:  2021/11/26
 "
 " This file changes a lot.
 
@@ -174,9 +174,9 @@ let do_syntax_sel_menu=1
 " set cmdheight=2
 
 " tab, indent
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
 set expandtab
 set smarttab
 set autoindent
@@ -193,7 +193,7 @@ set matchtime=2
 set matchpairs+=<:>
 set incsearch
 set hlsearch
-set noignorecase smartcase
+set noignorecase
 
 " backup
 set nobackup
@@ -226,8 +226,8 @@ set grepformat^=%f:%l:%c:%m
 
 " wildignore
 set wildignore+=*.pyc,*.sqlite,*.sqlite3,cscope.out
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip     " MacOSX/Linux
-set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe  " Windows
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip
+set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe
 set wildignore+=*/bower_components/*,*/node_modules/*
 set wildignore+=*/nginx_runtime/*,*/build/*,*/logs/*
 
@@ -329,7 +329,7 @@ function! V_fuzzy(input, callback, prompt) abort
 
   let ff_cmd = ff_cmds[s:ff_bin]
 
-  if type(a:input) ==# 1  " v:t_string
+  if type(a:input) ==# v:t_string
     let inpath = ''
     let cmd = a:input . ff_cmd
   else  " Assume List
@@ -371,8 +371,8 @@ endfunction
 
 function! V_set_arglist(paths) abort
   if empty(a:paths) | return | endif
-  " execute 'args' join(map(a:paths, 'fnameescape(v:val)'))
-  execute 'edit' fnameescape(a:paths[0])
+  execute 'args' join(map(a:paths, 'fnameescape(v:val)'))
+  " execute 'edit' fnameescape(a:paths[0])
 endfunction
 
 function! V_arglist_fuzzy(input_cmd) abort
@@ -455,9 +455,7 @@ function! V_toggle_background()
   endif
 endfunction
 
-"
 " Find in quickfix/location list
-"
 function! s:jump_to_qf_entry(items) abort
   execute 'crewind' matchstr(a:items[0], '^\s*\d\+', '')
 endfunction
@@ -484,9 +482,7 @@ function! s:find_in_loclist(winnr) abort
   call V_fuzzy(split(execute('llist'), "\n"), 's:jump_to_loclist_entry', 'Filter loclist entry')
 endfunction
 
-"
 " git
-"
 function! s:git(args, where) abort
   call V_cmd(['git'] + a:args, {'pos': a:where})
   setlocal nomodifiable
@@ -611,7 +607,7 @@ nnoremap <silent> <Leader>vl :<C-u>botright lopen<CR>
 nnoremap <silent> <Leader>vq :<C-u>botright copen<CR>
 
 " edit
-nnoremap <silent> <Leader>ee :e $HOME/.vimrc<CR>
+nnoremap <silent> <Leader>ee :e $HOME/.vim/_vimrc<CR>
 nnoremap <silent> <Leader>es :call V_strip_trailing_whitespaces()<CR>
 
 " insert pair
