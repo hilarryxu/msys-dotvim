@@ -6,7 +6,7 @@ let s:loaded = 1
 let s:path = expand('<sfile>:p:h')
 
 " plug {{{1
-call plug#begin('~/.vim/plugged')
+silent! call plug#begin('~/.vim/plugged')
 
 Plug 'hilarryxu/xcc.vim'
 
@@ -16,7 +16,9 @@ Plug 'tpope/vim-commentary'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'skywind3000/vim-auto-popmenu'
 
-Plug 'ludovicchabant/vim-gutentags'
+if !g:vimrc_env.win_gvim
+  Plug 'ludovicchabant/vim-gutentags'
+endif
 " Plug 'octol/vim-cpp-enhanced-highlight'
 
 call plug#end()

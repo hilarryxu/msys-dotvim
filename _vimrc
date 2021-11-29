@@ -302,7 +302,7 @@ function! V_cmd(cmd, ...) abort
 endfunction
 
 function! V_fuzzy(input, callback, prompt) abort
-  if 0 && s:env.win_gvim
+  if empty(s:ff_bin) && s:env.win_gvim
     if type(a:input) ==# v:t_string
       call zeef#open(systemlist(a:input), a:callback, a:prompt)
     else  " Assume List
