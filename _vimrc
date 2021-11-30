@@ -249,155 +249,7 @@ function! s:warn(error) abort
   echohl None
 endfunction
 
-fun! s:get_ff_output(inpath, outpath, callback, channel, status)
-  let l:output = filereadable(a:outpath) ? readfile(a:outpath) : []
-  silent! call delete(a:outpath)
-  silent! call delete(a:inpath)
-  call function(a:callback)(l:output)
-endf
-
-for s:ff_bin in ['fzy', 'sk', 'fzf', '']
-  if executable(s:ff_bin)
-    break
-  endif
-endfor
-
-function! V_search_in_buffer(pattern) abort
-  if getbufvar(winbufnr(winnr()), '&ft') ==# 'qf'
-    call s:warn('Cannot search the quickfix window')
-    return
-  endif
-  try
-    silent noautocmd execute 'lvimgrep /' . a:pattern . '/gj ' . fnameescape(expand('%'))
-  catch /^Vim\%((\a\+)\)\=:E480/  " Pattern not found
-    call s:warn('No match')
-  endtry
-  bo lwindow
-endfunction
-
-function! V_grep(args) abort
-  execute 'silent grep!' a:args
-  bo cwindow
-  redraw!
-endfunction
-
-function! V_vim_cmd(cmd) abort
-  botright 10new
-  setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nowrap
-  call append(0, split(execute(a:cmd), "\n"))
-  normal! gg
-endfunction
-
-function! V_cmd(cmd, ...) abort
-  let opt = get(a:000, 0, {})
-  if !has_key(opt, 'cwd')
-    let opt['cwd'] = fnameescape(expand('%:p:h'))
-  endif
-  let cmd = join(map(a:cmd, 'v:val !~# "\\v^[%#<]" || expand(v:val) ==# "" ? v:val : shellescape(expand(v:val))'))
-  execute get(opt, 'pos', 'botright') 'new'
-  setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nowrap
-  nnoremap <buffer> q <C-w>c
-  execute 'lcd' opt['cwd']
-  execute '%!' cmd
-endfunction
-
-function! V_fuzzy(input, callback, prompt) abort
-  if empty(s:ff_bin) && s:env.win_gvim
-    if type(a:input) ==# v:t_string
-      call zeef#open(systemlist(a:input), a:callback, a:prompt)
-    else  " Assume List
-      call zeef#open(a:input, a:callback, a:prompt)
-    endif
-    return
-  endif
-
-  if empty(s:ff_bin)
-    return
-  endif
-
-  let ff_cmds = {
-        \ 'fzf':     "|fzf -m --height 15 --prompt '".a:prompt."> ' 2>/dev/tty",
-        \ 'fzy':     "|fzy --lines=15 --prompt='".a:prompt."> ' 2>/dev/tty",
-        \ 'sk':      "|sk -m --height 15 --prompt '".a:prompt."> '"
-        \ }
-  if s:env.is_win || s:env.is_cygwin
-    let ff_cmds = {
-          \ 'fzf': '|fzf -m ',
-          \ 'fzy': "|fzy --lines=15 ",
-          \ }
-  endif
-
-  let ff_cmd = ff_cmds[s:ff_bin]
-
-  if type(a:input) ==# v:t_string
-    let inpath = ''
-    let cmd = a:input . ff_cmd
-  else  " Assume List
-    let inpath = tempname()
-    call writefile(a:input, inpath)
-    let cat_cmd = (s:env.is_win && !s:env.is_cygwin)
-          \ ? 'type'
-          \ : 'cat'
-    let cmd  = cat_cmd . ' ' . fnameescape(inpath) . ff_cmd
-  endif
-
-  if !has('gui_running') && !s:env.is_cygwin && executable('tput') && filereadable('/dev/tty')
-    let output = systemlist(printf('tput cup %d >/dev/tty; tput cnorm >/dev/tty; ' . cmd, &lines))
-    redraw!
-    silent! call delete(inpath)
-    call function(a:callback)(output)
-    return
-  endif
-
-  let outpath = tempname()
-  let cmd .= ' >' . fnameescape(outpath)
-
-  if has('terminal')
-    if !s:env.is_win && !s:env.is_cygwin
-      botright 15split
-    endif
-    call term_start([&shell, &shellcmdflag, cmd], {
-          \ 'term_name': a:prompt,
-          \ 'curwin': 1,
-          \ 'term_finish': 'close',
-          \ 'exit_cb': function('s:get_ff_output', [inpath, outpath, a:callback])
-          \ })
-  else
-   silent execute '!' . cmd
-   redraw!
-   call s:get_ff_output(inpath, outpath, a:callback, -1, v:shell_error)
-  endif
-endfunction
-
-function! V_set_arglist(paths) abort
-  if empty(a:paths) | return | endif
-  execute 'args' join(map(a:paths, 'fnameescape(v:val)'))
-  " execute 'edit' fnameescape(a:paths[0])
-endfunction
-
-function! V_arglist_fuzzy(input_cmd) abort
-  call V_fuzzy(a:input_cmd, 'V_set_arglist', 'Choose files')
-endfunction
-
-function! V_findfile(...) abort
-  let l:dir = (a:0 > 0 ? ' '.a:1 : ' .')
-  call V_arglist_fuzzy(executable('rg') ? 'rg --files'.l:dir : 'find'.l:dir.' -type f')
-endfunction
-
-function! V_buffer_close() abort
-  if winnr('$') > 1
-    close
-  else
-    bd
-  endif
-endfunction
-
-function! V_buffer_only() abort
-  let bl = filter(range(1, bufnr('$')), 'buflisted(v:val)')
-  execute (bufnr('') > bl[0] ? 'confirm '.bl[0].',.-bd' : '') (bufnr('') < bl[-1] ? '|confirm .+,$bd' : '')
-endfunction
-
-function! s:set_colorscheme(colors) abort
+function! Local_set_colorscheme(colors) abort
   execute 'colorscheme' a:colors[0]
 endfunction
 
@@ -407,16 +259,7 @@ function! V_choose_colorscheme() abort
   if empty(s:colors)
     let s:colors = map(globpath(&runtimepath, 'colors/*.vim', 0, 1) , 'fnamemodify(v:val, ":t:r")')
   endif
-  call V_fuzzy(s:colors, 's:set_colorscheme', 'Choose colorscheme')
-endfunction
-
-function! s:switch_to_buffer(results) abort
-  execute 'buffer' matchstr(a:results[0], '^\s*\zs\d\+')
-endfunction
-
-function! V_choose_buffer(props) abort
-  let buffers = map(split(execute('ls' .. (get(a:props, 'unlisted', 0) ? '!' : '')), "\n"), 'substitute(v:val, ''"\(.*\)"\s*line\s*\d\+$'', ''\1'', "")')
-  call V_fuzzy(buffers, 's:switch_to_buffer', 'Switch buffer')
+  call local#search#fuzzy(s:colors, 'Local_set_colorscheme', 'Choose colorscheme')
 endfunction
 
 function! V_tab_width(...) abort
@@ -470,7 +313,7 @@ function! s:find_in_qflist() abort
     call s:warn('Quickfix list is empty')
     return
   endif
-  call V_fuzzy(split(execute('clist'), "\n"), 's:jump_to_qf_entry', 'Filter quickfix entry')
+  call local#search#fuzzy(split(execute('clist'), "\n"), 's:jump_to_qf_entry', 'Filter quickfix entry')
 endfunction
 
 function! s:find_in_loclist(winnr) abort
@@ -479,25 +322,7 @@ function! s:find_in_loclist(winnr) abort
     call s:warn('Location list is empty')
     return
   endif
-  call V_fuzzy(split(execute('llist'), "\n"), 's:jump_to_loclist_entry', 'Filter loclist entry')
-endfunction
-
-" git
-function! s:git(args, where) abort
-  call V_cmd(['git'] + a:args, {'pos': a:where})
-  setlocal nomodifiable
-endfunction
-
-function! s:git_diff() abort
-  let ft = getbufvar('%', '&ft')
-  let fn = expand('%:t')
-  call s:git(['show', 'HEAD:./'.fn], 'rightbelow vertical')
-  let &l:filetype = ft
-  execute 'silent file' fn '[HEAD]'
-  diffthis
-  autocmd BufWinLeave <buffer> diffoff!
-  wincmd p
-  diffthis
+  call local#search#fuzzy(split(execute('llist'), "\n"), 's:jump_to_loclist_entry', 'Filter loclist entry')
 endfunction
 
 " Section: mappings {{{1
@@ -524,9 +349,9 @@ endfunction
 nnoremap <silent> <C-p> :<C-u>FindFile<CR>
 nnoremap <silent> <Leader>ff :<C-u>FindFile<CR>
 " nnoremap <Leader>fb :<C-u>ls<CR>:buffer<Space>
-nnoremap <silent> - :<C-u>call V_choose_buffer({})<CR>
-nnoremap <silent> <Leader>fb :<C-u>call V_choose_buffer({})<CR>
-nnoremap <silent> <Leader>fr :<C-u>call V_arglist_fuzzy(v:oldfiles)<CR>
+nnoremap <silent> - :<C-u>call local#search#choose_buffer({})<CR>
+nnoremap <silent> <Leader>fb :<C-u>call local#search#choose_buffer({})<CR>
+nnoremap <silent> <Leader>fr :<C-u>call local#search#fuzzy_arglist(v:oldfiles)<CR>
 nnoremap <silent> <Leader>fl :<C-u>call <SID>find_in_loclist(0)<CR>
 nnoremap <silent> <Leader>fq :<C-u>call <SID>find_in_qflist()<CR>
 
@@ -552,8 +377,8 @@ nnoremap <Leader>0 10<C-w>w
 " buffer
 nnoremap <silent> <Leader>ba :<C-u>call xcc#tags#alt_file()<CR>
 nnoremap <silent> <Leader>bd :<C-u>bd<CR>
-nnoremap <silent> <Leader>bc :<C-u>call V_buffer_close()<CR>
-nnoremap <silent> <Leader>bo :<C-u>call V_buffer_only()<CR>
+nnoremap <silent> <Leader>bc :<C-u>call local#buffer#safe_close()<CR>
+nnoremap <silent> <Leader>bo :<C-u>call local#buffer#delete_others()<CR>
 nnoremap <silent> <Leader>bm :<C-u>VimCmd messages<CR>
 nnoremap <silent> <Leader>bn :<C-u>enew<CR>
 nnoremap <silent> <Leader>bs :<C-u>vnew +setlocal\ buftype=nofile\ bufhidden=wipe\ noswapfile<CR>
@@ -590,8 +415,8 @@ nnoremap <Leader>P "xP
 vnoremap <Leader>P "xP
 
 " git
-nnoremap <silent> <Leader>gd :<C-u>call <SID>git_diff()<CR>
-nnoremap <silent> <Leader>gs :<C-u>call V_cmd(['git', 'status'])<CR>
+nnoremap <silent> <Leader>gd :<C-u>call local#git#diff()<CR>
+nnoremap <silent> <Leader>gs :<C-u>call local#run#cmd(['git', 'status'])<CR>
 
 " option
 nnoremap <silent> <Leader>op :call V_toggle_paste()<CR>
@@ -644,11 +469,11 @@ command! Wcolor echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") .
     \ "> lo<" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") .
     \ "> fg:" . synIDattr(synIDtrans(synID(line("."),col("."),1)),"fg#")
 
-command! -nargs=1 Search call V_search_in_buffer(<q-args>)
-command! -nargs=* -complete=file Grep call V_grep(<q-args>)
-command! -nargs=? -complete=dir FindFile call V_findfile(<q-args>)
+command! -nargs=1 Search call local#search#cur_buffer(<q-args>)
+command! -nargs=* -complete=file Grep call local#search#grep(<q-args>)
+command! -nargs=? -complete=dir FindFile call local#search#fuzzy_files(<q-args>)
 
-command! -complete=command -nargs=+ VimCmd call V_vim_cmd(<q-args>)
+command! -complete=command -nargs=+ VimCmd call local#run#vim_cmd(<q-args>)
 
 command! -nargs=? TabWidth call V_tab_width(<args>)
 
