@@ -1,7 +1,7 @@
 " .vimrc
 "
 " Author:   Larry Xu <hilarryxu@gmail.com>
-" Updated:  2021/11/26
+" Updated:  2021/11/30
 "
 " This file changes a lot.
 
@@ -193,7 +193,8 @@ set matchtime=2
 set matchpairs+=<:>
 set incsearch
 set hlsearch
-set noignorecase
+set ignorecase
+set smartcase
 
 " backup
 set nobackup
@@ -260,16 +261,6 @@ function! V_choose_colorscheme() abort
     let s:colors = map(globpath(&runtimepath, 'colors/*.vim', 0, 1) , 'fnamemodify(v:val, ":t:r")')
   endif
   call local#search#fuzzy(s:colors, 'Local_set_colorscheme', 'Choose colorscheme')
-endfunction
-
-function! V_tab_width(...) abort
-  if a:0 > 0
-    let twd = a:1 > 0 ? a:1 : 1
-    let &l:tabstop = twd
-    let &l:shiftwidth = twd
-    let &l:softtabstop = twd
-  endif
-  echo &l:tabstop
 endfunction
 
 function! V_strip_trailing_whitespaces() abort
@@ -475,7 +466,7 @@ command! -nargs=? -complete=dir FindFile call local#search#fuzzy_files(<q-args>)
 
 command! -complete=command -nargs=+ VimCmd call local#run#vim_cmd(<q-args>)
 
-command! -nargs=? TabWidth call V_tab_width(<args>)
+command! -nargs=? TabWidth call local#text#tab_width(<args>)
 
 " Section: autocmds {{{1
 augroup vimrc_autocmds
@@ -484,7 +475,7 @@ augroup vimrc_autocmds
         \ if line("'\"") > 1 && line("'\"") <= line("$") && &ft !~# 'commit' |
         \   exe "normal! g`\"" |
         \ endif
-  autocmd ColorScheme * call matchadd('Todo', '\W\zs\(NOTICE\|WARNING\|DANGER\)')
+  autocmd ColorScheme * call matchadd('Todo', '\W\zs\(NOTE\|NOTICE\|WARNING\|DANGER\)')
 augroup END
 
 augroup vimrc_filetype
