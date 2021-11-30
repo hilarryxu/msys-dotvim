@@ -605,6 +605,7 @@ nnoremap <silent> <Leader>vr :<C-u>registers<CR>
 nnoremap <silent> <Leader>vs :<C-u>let &laststatus=2-&laststatus<CR>
 nnoremap <silent> <Leader>vl :<C-u>botright lopen<CR>
 nnoremap <silent> <Leader>vq :<C-u>botright copen<CR>
+nnoremap <silent> <Leader>vz :<C-u>call local#win#zoom_toggle()<CR>
 
 " edit
 nnoremap <silent> <Leader>ee :e $HOME/.vim/_vimrc<CR>
