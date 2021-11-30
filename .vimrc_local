@@ -19,7 +19,6 @@ Plug 'skywind3000/vim-auto-popmenu'
 if !g:vimrc_env.win_gvim
   Plug 'ludovicchabant/vim-gutentags'
 endif
-" Plug 'octol/vim-cpp-enhanced-highlight'
 
 call plug#end()
 
@@ -74,7 +73,7 @@ if s:has_plug('vim-auto-popmenu')
 endif
 
 " xcc.vim {{{1
-if s:has_plug('xcc.vim')
+if s:has_plug('xcc.vim') && exists(':PI')
   call xcc#plug#load()
   PI edit
   PI snip
@@ -86,13 +85,12 @@ if s:has_plug('xcc.vim')
 endif
 
 " others {{{1
+
 " config {{{1
 augroup local_vimrc_filetype
   autocmd!
   " autocmd FileType c setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
 augroup END
-
-set hidden
 
 set t_Co=256
 colorscheme xoria256mod
