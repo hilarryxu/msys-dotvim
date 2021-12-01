@@ -4,6 +4,7 @@ endif
 let s:loaded = 1
 
 let s:path = expand('<sfile>:p:h')
+let s:env = g:vimrc_env
 
 " plug {{{1
 silent! call plug#begin('~/.vim/plugged')
@@ -16,7 +17,7 @@ Plug 'tpope/vim-commentary'
 Plug 'skywind3000/asyncrun.vim'
 Plug 'skywind3000/vim-auto-popmenu'
 
-if !g:vimrc_env.win_gvim
+if !s:env.win_gvim
   Plug 'ludovicchabant/vim-gutentags'
 endif
 
@@ -73,7 +74,7 @@ if s:has_plug('vim-auto-popmenu')
 endif
 
 " xcc.vim {{{1
-if s:has_plug('xcc.vim') && exists(':PI')
+if s:has_plug('xcc.vim')
   call xcc#plug#load()
   PI edit
   PI snip
@@ -95,7 +96,7 @@ augroup END
 set t_Co=256
 colorscheme xoria256mod
 
-if g:vimrc_env.win_gvim
+if s:env.win_gvim
   set guifont=Consolas_for_Powerline_FixedD:h14:cANSI
   set lines=35 columns=110
 endif
