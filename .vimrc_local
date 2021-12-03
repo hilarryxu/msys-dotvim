@@ -14,7 +14,7 @@ Plug 'hilarryxu/xcc.vim'
 Plug 'tpope/vim-commentary'
 " Plug 'junegunn/vim-easy-align'
 
-Plug 'skywind3000/asyncrun.vim'
+" Plug 'skywind3000/asyncrun.vim'
 Plug 'skywind3000/vim-auto-popmenu'
 
 if !s:env.win_gvim
@@ -98,6 +98,7 @@ endif
 augroup local_vimrc_filetype
   autocmd!
   " autocmd FileType c setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
+  autocmd FileType c,cpp setlocal commentstring=//\ %s
 augroup END
 
 set t_Co=256
