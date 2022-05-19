@@ -9,13 +9,13 @@ let s:env = g:vimrc_env
 " plug {{{1
 silent! call plug#begin('~/.vim/plugged')
 
-Plug 'hilarryxu/xcc.vim'
+" Plug 'hilarryxu/xcc.vim'
 
-Plug 'tpope/vim-commentary'
+" Plug 'tpope/vim-commentary'
 " Plug 'junegunn/vim-easy-align'
 
 " Plug 'skywind3000/asyncrun.vim'
-Plug 'skywind3000/vim-auto-popmenu'
+" Plug 'skywind3000/vim-auto-popmenu'
 
 if !s:env.win_gvim
   Plug 'ludovicchabant/vim-gutentags'
@@ -59,7 +59,7 @@ if s:has_plug('asyncrun.vim')
 endif
 
 " acp {{{1
-if s:has_plug('vim-auto-popmenu')
+if 1 || s:has_plug('vim-auto-popmenu')
   " enable this plugin for filetypes, '*' for all files.
   let g:apc_enable_ft = {'text': 1, 'c': 1, 'cpp': 1, 'vim': 1}
 
@@ -74,7 +74,7 @@ if s:has_plug('vim-auto-popmenu')
 endif
 
 " xcc.vim {{{1
-if s:has_plug('xcc.vim')
+if 1 || s:has_plug('xcc.vim')
   try
     call xcc#plug#load()
   catch /^Vim\%((\a\+)\)\=:E117/
