@@ -85,6 +85,7 @@ if 1 || s:has_plug('xcc.vim')
     PI edit
     PI snip
     PI quickmenu
+    PI clam
 
     let g:quickmenu_cmds = {
           \ 'help.md': { 'command': 'e ' . s:path . '/help.md' }
