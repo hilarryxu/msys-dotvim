@@ -6,6 +6,8 @@ let s:loaded = 1
 let s:path = expand('<sfile>:p:h')
 let s:env = g:vimrc_env
 
+let g:python_highlight_all = 1
+
 " plug {{{1
 silent! call plug#begin('~/.vim/plugged')
 
@@ -19,6 +21,7 @@ silent! call plug#begin('~/.vim/plugged')
 
 if !s:env.win_gvim
   Plug 'ludovicchabant/vim-gutentags'
+  Plug 'tmhedberg/SimpylFold', { 'for': 'python' }
 endif
 
 call plug#end()
