@@ -11,13 +11,10 @@ let g:python_highlight_all = 1
 " plug {{{1
 silent! call plug#begin('~/.vim/plugged')
 
-" Plug 'hilarryxu/xcc.vim'
-
-" Plug 'tpope/vim-commentary'
 " Plug 'junegunn/vim-easy-align'
-
 " Plug 'skywind3000/asyncrun.vim'
-" Plug 'skywind3000/vim-auto-popmenu'
+
+Plug 'skywind3000/vim-quickui'
 
 if !s:env.win_gvim
   Plug 'ludovicchabant/vim-gutentags'
@@ -31,9 +28,9 @@ function! s:has_plug(name) abort
 endfunction
 
 " tags {{{1
-if s:has_plug('vim-gutentags')
-  set tags=./.tags;,.tags
+set tags=./.tags;,.tags
 
+if s:has_plug('vim-gutentags')
   " gutentags 搜索工程目录的标志，碰到这些文件/目录名就停止向上一级目录递归
   let g:gutentags_project_root = ['.root', '.svn', '.git', '.hg', '.project']
 
@@ -97,12 +94,25 @@ if 1 || s:has_plug('xcc.vim')
 endif
 
 " others {{{1
+if s:has_plug('vim-quickui')
+  let g:quickui_color_scheme = 'gruvbox'
+  nnoremap <F3> :call quickui#tools#preview_tag('')<CR>
+  nnoremap <M-;> :call quickui#tools#preview_tag('')<CR>
+  inoremap <M-;> <C-\><C-o>:call quickui#tools#preview_tag('')<CR>
+
+  noremap <M-u> :call quickui#preview#scroll(-1)<CR>
+  noremap <M-d> :call quickui#preview#scroll(+1)<CR>
+  inoremap <M-u> <C-\><C-o>:call quickui#preview#scroll(-1)<CR>
+  inoremap <M-d> <C-\><C-o>:call quickui#preview#scroll(+1)<CR>
+endif
 
 " config {{{1
 augroup local_vimrc_filetype
   autocmd!
   " autocmd FileType c setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab
   autocmd FileType c,cpp setlocal commentstring=//\ %s
+
+  autocmd FileType qf noremap <silent><buffer> p :call quickui#tools#preview_quickfix()<CR>
 augroup END
 
 set t_Co=256
