@@ -88,6 +88,7 @@ if 1 || s:has_plug('xcc.vim')
     PI clam
 
     let g:quickmenu_cmds = {
+          \ 'vimrc_local': { 'command': 'e ' . s:path . '/.vimrc_local' },
           \ 'help.md': { 'command': 'e ' . s:path . '/help.md' }
           \ }
   endif

@@ -54,8 +54,16 @@ fun! xcc#plug#quickmenu#func#add(cmd, config) abort
 endf
 
 fun! xcc#plug#quickmenu#func#open() abort
-  30vnew
-  setlocal bufhidden=wipe buftype=nofile nonu fdc=0
-  cal s:render()
-  setlocal nomodifiable cursorline
+  if exists('g:quickmenu_winid') && exists('g:quickmenu_bufnr') && bufexists(g:quickmenu_bufnr)
+    let rv = win_gotoid(g:quickmenu_winid)
+  else
+    30vnew
+    let g:quickmenu_winid = win_getid()
+    let g:quickmenu_bufnr = bufnr('%')
+
+    silent file QuickMenu
+    setlocal bufhidden=wipe buftype=nofile nonu fdc=0
+    cal s:render()
+    setlocal nomodifiable cursorline
+  endif
 endf
